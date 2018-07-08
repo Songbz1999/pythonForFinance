@@ -18,9 +18,9 @@ Created on Sun Jul  8 20:57:08 2018
 
 #----------------------------------------#
 def fac():
-    n=8
+    n=input('give me a number:')
     ans=1
-    for i in range(n):
+    for i in range(int(n)):
         ans=ans*(i+1)
     print(ans)
 fac()    
