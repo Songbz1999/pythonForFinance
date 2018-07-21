@@ -11,32 +11,20 @@ Created on Sun Jul 15 10:56:03 2018
 import psycopg2
 import pandas as pd
 import io
-
-try:
-    conn = psycopg2.connect(dbname='study', user='quant', host='35.240.207.140', password='quant')
-except:
-    print("I am unable to connect to the database")
     
-print(conn)
-
-cur = conn.cursor()
-
-cur.execute("""SELECT * from Persons""")
-
-rows = cur.fetchall()
-
-print ("\nShow me the databases:\n")
-for row in rows:
-    print ("   ", row)
-
-def create_table():
+def database(a):
     try:
         conn = psycopg2.connect(dbname='study', user='quant', host='35.240.207.140', password='quant')
     except:
         print("I am unable to connect to the database")
     cur = conn.cursor()
+    a
+    conn.commit()
+    conn.close()
 
-    cur.execute("""
+
+def create_table():
+    database(cur.execute("""
                 CREATE TABLE Stocks (
                         date  date, 
                         open  real, 
@@ -44,43 +32,27 @@ def create_table():
                         low  real,
                         close  real,
                         volume  real
-                        ); """)
-    conn.commit()
-    conn.close()
+                        ); """))
     print ("Table create successful!")
     
 def insert_value():
-    try:
-        conn = psycopg2.connect(dbname='study', user='quant', host='35.240.207.140', password='quant')
-    except:
-        print("I am unable to connect to the database")
-    cur = conn.cursor()
-    df = pd.read_csv('C:/Users/Thinkpad/Desktop/SZ000021.csv', sep = ',' )    
-    output = io.StringIO()
+    df = pd.read_csv('C:/Users/Thinkpad/Desktop/SZ000021.csv', sep = ',' );    
+    output = io.StringIO();
 # ignore the index
-    df.to_csv(output, sep='\t',index = False, header = False)
-    output.getvalue()
+    df.to_csv(output, sep='\t',index = False, header = False);
+    output.getvalue();
 # jump to start of stream
-    output.seek(0)
-    cur.copy_from(output, 'Stocks', null='')
-    conn.commit()
-    conn.close()
+    output.seek(0);
+    database(cur.copy_from(output, 'Stocks', null=''))
     print ("Data insert successful!")
     return 0
 
 def select_data():
-    try:
-        conn = psycopg2.connect(dbname='study', user='quant', host='35.240.207.140', password='quant')
-    except:
-        print("I am unable to connect to the database")
-    cur = conn.cursor()
-    cur.execute("""SELECT * from Stocks""")
-    rows = cur.fetchall()
+    database(cur.execute("""SELECT * from Stocks""")
+             rows = cur.fetchall()
     print ("\nShow me the databases:\n")
     for row in rows:
-        print ("   ", row)
-    conn.commit()
-    conn.close()
+        print ("   ", row))
     return 0
 
 
