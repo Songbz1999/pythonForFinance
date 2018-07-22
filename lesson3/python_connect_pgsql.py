@@ -11,6 +11,7 @@ Created on Sun Jul 15 10:56:03 2018
 import psycopg2
 import pandas as pd
 import io
+import os
     
 def database(a):
     try:
@@ -18,13 +19,13 @@ def database(a):
     except:
         print("I am unable to connect to the database")
     cur = conn.cursor()
-    a
+    a()
     conn.commit()
     conn.close()
 
 
-def create_table():
-    database(cur.execute("""
+def create_table(b):
+    b.execute("""
                 CREATE TABLE Stocks (
                         date  date, 
                         open  real, 
@@ -32,10 +33,10 @@ def create_table():
                         low  real,
                         close  real,
                         volume  real
-                        ); """))
+                        ); """)
     print ("Table create successful!")
     
-def insert_value():
+def insert_value(b,df):
     df = pd.read_csv('C:/Users/Thinkpad/Desktop/SZ000021.csv', sep = ',' );    
     output = io.StringIO();
 # ignore the index
@@ -43,22 +44,28 @@ def insert_value():
     output.getvalue();
 # jump to start of stream
     output.seek(0);
-    database(cur.copy_from(output, 'Stocks', null=''))
+    b.copy_from(output, 'sz_tocks', null='')
     print ("Data insert successful!")
-    return 0
 
-def select_data():
-    database(cur.execute("""SELECT * from Stocks""")
-             rows = cur.fetchall()
+def select_data(b):
+    b.execute("""SELECT * from Stocks""")
+    rows = b.fetchall()
     print ("\nShow me the databases:\n")
     for row in rows:
-        print ("   ", row))
-    return 0
+        print ("   ", row)
+
+def read_csv():
+    folder_path = 'C:/Users/Thinkpad/Desktop/2018-7 精英特训/sz_stock'
+    file_list = os.listdir(folder_path)
+    for name in file_list:
+        file_path = folder_path + '/' + name
+        df = pd.read_csv(file_path, sep = ',' )
+        database(insert_value(cur,df))
+    print ("All data insert successful")
 
 
+database(create_table(cur))
+database(insert_value(cur,df))
+database(select_data(cur))
 
-create_table()
-insert_value()
-select_data()
-
-cur.execute("""COPY Stock FROM 'C:/Users/Thinkpad/Desktop/SZ000021.txt'""")
+#cur.execute("""COPY Stock FROM 'C:/Users/Thinkpad/Desktop/SZ000021.txt'""")
