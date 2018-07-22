@@ -94,3 +94,4 @@ get_connection(select_sth)
 
 # https://coolshell.cn/articles/4758.html
 # https://docs.python.org/3/library/unittest.html
+# http://dacatay.com/data-science/part-3-time-series-stationarity-python/
