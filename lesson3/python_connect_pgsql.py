@@ -68,4 +68,18 @@ database(create_table(cur))
 database(insert_value(cur,df))
 database(select_data(cur))
 
+
 #cur.execute("""COPY Stock FROM 'C:/Users/Thinkpad/Desktop/SZ000021.txt'""")
+
+"""
+def get_connection(execute_sql):
+    cur = 15
+    execute_sql(cur)
+    print("in foo: ", cur)
+
+    
+def select_sth(cur):
+    print("select_sth", cur)
+    
+get_connection(select_sth)
+"""
