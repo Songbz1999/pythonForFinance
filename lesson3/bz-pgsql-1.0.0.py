@@ -12,16 +12,20 @@ import os
 def database(db_command_func,*data):
     try:
         conn = psycopg2.connect(dbname='study', user='quant', host='35.240.207.140', password='quant')
+        print("connection success")
     except:
         print("I am unable to connect to the database")
         
+    ret = 0
     if not data:    
-        db_command_func(conn.cursor())
+        ret = db_command_func(conn.cursor())
     else:
-        db_command_func(conn.cursor(),*data)
+        ret = db_command_func(conn.cursor(),*data)
         
     conn.commit()
     conn.close()
+    
+    return ret
 
 
 def create_table_if_not_exist(cursor):
@@ -49,8 +53,10 @@ def insert_value(cursor, df):
 # df.to_sql('db_table2', engine, if_exists='replace')
 
 def select_data(cursor):
-    cursor.execute("""SELECT COUNT(*) from sz_stocks""")
+    cursor.execute("""SELECT * from sz_stocks""")
     rows = cursor.fetchall()
+    cursor.execute("""SELECT COUNT(*) from sz_stocks""")
+    count = cursor.fetchall()
     print ("\nShow me the data:\n")
 #    count = 0
     # inserted line sum 5000 * 500, head(0) 
@@ -58,7 +64,8 @@ def select_data(cursor):
 #        print ("   ", row)
 #        count += 1
 #    print ('total '+ str(count) + 'row data are selected')
-    print('Total' + rows + ' data are selected')
+    print('Total' + str(count) + ' data are selected')
+    return rows
 
         
 def select_table_name(cursor):
@@ -66,9 +73,11 @@ def select_table_name(cursor):
                        WHERE table_schema = 'public'""")
     rows = cursor.fetchall()
     print ("\nShow me the data:\n")
+
     # inserted line sum 5000 * 500, head(0) 
     for row in rows:
         print ("   ", row)
+
 
 def read_csv(folder_path):
     try:
@@ -77,12 +86,12 @@ def read_csv(folder_path):
         print('cannot find the folder path')
     # file_list line sum -> 5000 * 500, head(0) random sample 
     count = 0
-    print('total '+ len(file_list) + ' files')
+    print('total '+ str(len(file_list)) + ' files')
     for name in file_list:
         file_path = folder_path + '/' + name
         df0 = pd.read_csv(file_path, sep = ',' ,names = ['date','open','high','low','close','volume','name'],index_col=False,header=None)
         df = df0.drop(df0.index[0])
-        df['name'] = name[0:9]
+        df['name'] = name[0:8]
         database(insert_value,df)
         count += 1
         speed = round(count / len(file_list), 3)
@@ -90,7 +99,7 @@ def read_csv(folder_path):
     print ("All data insert successful")
     
 def check_insert(cursor,folder_path):
-    cursor.execute("""SELECT COUNT(*) from sz_stocks WHERE TO_CHAR(pricing_date,'YYYY/MM/DD') = '2017/12/01'""")
+    cursor.execute("""SELECT * from sz_stocks WHERE TO_CHAR(pricing_date,'YYYY/MM/DD') = '2017/12/01'""")
     rows = cursor.fetchall()
     test_id = 'SZ000861'
     test_1 = 0
@@ -124,6 +133,6 @@ folder_path = 'C:/Users/Thinkpad/Desktop/2018-7 Goldman Programme/sz_stcok'
 database(create_table_if_not_exist)
 read_csv(folder_path)
 database(select_table_name)
-database(select_data)
+a = database(select_data)
 database(check_insert,folder_path)
 
