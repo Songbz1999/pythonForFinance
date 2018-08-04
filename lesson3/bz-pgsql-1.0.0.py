@@ -53,7 +53,7 @@ def insert_value(cursor, df):
 # df.to_sql('db_table2', engine, if_exists='replace')
 
 def select_data(cursor):
-    cursor.execute("""SELECT * from sz_stocks""")
+    cursor.execute("""SELECT pricing_date, close, stock_symbol from sz_stocks""")
     rows = cursor.fetchall()
     cursor.execute("""SELECT COUNT(*) from sz_stocks""")
     count = cursor.fetchall()
@@ -127,6 +127,8 @@ def check_insert(cursor,folder_path):
     print ('sql_close: ' + str(sql_close) + '; csv_close: ' + str(csv_close))
     if sql_close == csv_close:
         print ('Test PASS !!!!!!!!!!!!!')           
+
+def asf_test():
     
     
 folder_path = 'C:/Users/Thinkpad/Desktop/2018-7 Goldman Programme/sz_stcok'
